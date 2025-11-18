@@ -1,0 +1,160 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@600&display=swap");
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: radial-gradient(
+    circle at top,
+    #cceeff,
+    #99ccff 70%,
+    #88bbee 100%
+  );
+  font-family: "Nunito", sans-serif;
+}
+#overlay1 {
+  width: 2260px;
+  height: 120px;
+  position: absolute;
+  left: -80px;
+  top: 0px;
+}
+#overlay2 {
+  width: 2270px;
+  height: 120px;
+  position: absolute;
+  left: -80px;
+  bottom: 0px;
+}
+#overlay3 {
+  width: 110px;
+  height: 1200px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+#overlay4 {
+  width: 110px;
+  height: 1200px;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+}
+canvas {
+  display: block;
+  margin: 0 auto;
+  border-radius: 15px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+}
+#game {
+  z-index: 10;
+}
+
+/* Скрываем по умолчанию, будет показано через JS при старте игры */
+#info {
+  position: absolute;
+  bottom: 130px;
+  left: 120px;
+  color: #003366;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  padding: 16px 26px;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  font-size: 24px;
+  z-index: 10;
+  display: none; /* Скрыто по умолчанию */
+}
+
+/* Скрываем по умолчанию, будет показано через JS при старте игры */
+#restartBtn {
+  position: absolute;
+  bottom: 130px;
+  right: 120px;
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(6px);
+  border-radius: 10px;
+  padding: 16px 26px;
+  color: #003366;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 24px;
+  z-index: 10;
+  display: none; /* Скрыто по умолчанию */
+}
+
+#restartBtn:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+#snow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Общий стиль для попапов (Меню и Результаты) */
+.popup {
+  position: absolute;
+  min-width: 400px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #003366;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  padding: 30px 40px; /* Увеличенный паддинг для меню */
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  text-align: center;
+  font-size: 28px;
+  display: none; /* Скрыто по умолчанию, управляется JS */
+  z-index: 10;
+}
+
+#menuPopup {
+  display: block; /* Показываем меню при запуске */
+}
+
+.popup button {
+  display: block; /* Кнопки в попапе будут блочными */
+  width: 100%; /* Занимают всю ширину попапа */
+  margin: 20px 0 0 0; /* Отступ сверху, 0 по бокам */
+  color: #003366;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  padding: 16px 26px;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  font-size: 24px;
+  cursor: pointer;
+  transition: 0.3s;
+  border: none;
+}
+.popup button:hover {
+  background: #aad8ff;
+}
+
+/* Скрываем по умолчанию, будет показано через JS при старте игры */
+#gameUI {
+  position: absolute;
+  top: 130px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none; /* Скрыто по умолчанию */
+  gap: 50px;
+  color: #003366;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  padding: 16px 26px;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  font-size: 24px;
+  font-family: Arial, sans-serif;
+  z-index: 10;
+}
