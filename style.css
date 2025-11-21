@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@600&display=swap");
-
+* {
+  user-select: none;
+}
 body {
   margin: 0;
   overflow: hidden;
@@ -136,7 +138,7 @@ canvas {
   transition: 0.3s;
   border: none;
 }
-.popup button:hover {
+.popup button:active {
   background: #aad8ff;
 }
 
@@ -157,4 +159,25 @@ canvas {
   font-size: 24px;
   font-family: Arial, sans-serif;
   z-index: 10;
+}
+#exit-button {
+  display: inline-block; /* Кнопки в попапе будут блочными */
+  width: 50%; /* Занимают всю ширину попапа */
+  margin: 40px 0 0 0; /* Отступ сверху, 0 по бокам */
+  color: #003366;
+  text-decoration: none;
+
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  padding: 16px 26px;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  font-size: 24px;
+  cursor: pointer;
+  transition: 0.3s;
+  border: none;
+}
+
+#exit-button:active {
+  background: #aad8ff;
 }

@@ -2,10 +2,19 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
     <title>Снежки</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      #game {
+        touch-action: none;
+      }
+    </style>
   </head>
-  <body>
+  <body oncontextmenu="return false;">
     <canvas id="game"></canvas>
     <div id="info">Бросай снежки свайпом. Сбей все подарки.</div>
     <button id="restartBtn">Перезапуск</button>
@@ -13,6 +22,9 @@
       <h2>Снежки</h2>
       <p>Сбей все подарки снежками!</p>
       <button id="startGameBtn">Начать игру</button>
+      <a id="exit-button" href="https://maxim-prog292.github.io/select_game_NY/"
+        >Назад</a
+      >
     </div>
     <div id="resultPopup" class="popup"></div>
     <div id="gameUI">
@@ -39,14 +51,13 @@
       let slowMode = false;
       let timerInterval = null;
       let start = null;
-      let gameActive = false; // Добавление флага активности игры
+      let gameActive = false;
 
       let R_TARGET = 40;
       let SPEED_TARGET = 3;
       let VAL_TARGET = 20;
       let START_TIME = 60;
 
-      // Массив сообщений
       const endMessages = [
         "Ты как Данила Багров, только вместо обреза — снежок. Красиво работаешь!",
         "Твои снежки летят как метеориты, только без Челябинска!",
@@ -67,7 +78,6 @@
         "Умеете, могёте!",
       ];
 
-      // Изображения (замени на свои пути)
       let targetImg = new Image();
       targetImg.src = "images/target.png";
       let snowballImg = new Image();
@@ -95,7 +105,6 @@
         document.getElementById("info").style.display = "none";
         document.getElementById("restartBtn").style.display = "none";
 
-        // Очищаем поле от снежков и осколков
         snowballs = [];
         fragments = [];
       }
@@ -150,26 +159,73 @@
           .addEventListener("click", showMenu);
       }
 
+      // --- УПРАВЛЕНИЕ МЫШЬЮ ---
       canvas.addEventListener("mousedown", (e) => {
-        if (!gameActive) return; // Проверка на активность игры
+        if (!gameActive) return;
         start = { x: e.offsetX, y: e.offsetY };
       });
 
       canvas.addEventListener("mouseup", (e) => {
-        if (!gameActive || !start) return; // Проверка на активность игры
+        if (!gameActive || !start) return;
         const dx = start.x - e.offsetX;
         const dy = start.y - e.offsetY;
-        snowballs.push({
-          x: start.x,
-          y: start.y,
-          vx: -dx / 10,
-          vy: -dy / 10,
-          r: 15,
-        });
+        throwSnowball(start.x, start.y, dx, dy);
         start = null;
       });
 
-      // Создание осколков снежка
+      // --- УПРАВЛЕНИЕ ТАЧСКРИНОМ (МОБИЛЬНЫЕ) ---
+
+      // Вспомогательная функция для перевода координат экрана в координаты канваса
+      function getTouchPos(evt) {
+        const rect = canvas.getBoundingClientRect();
+        // Берем первый палец (changedTouches используется и для start, и для end)
+        const touch = evt.changedTouches[0];
+        const scaleX = canvas.width / rect.width; // Отношение реальной ширины к видимой
+        const scaleY = canvas.height / rect.height; // Отношение реальной высоты к видимой
+
+        return {
+          x: (touch.clientX - rect.left) * scaleX,
+          y: (touch.clientY - rect.top) * scaleY,
+        };
+      }
+
+      canvas.addEventListener(
+        "touchstart",
+        (e) => {
+          if (!gameActive) return;
+          e.preventDefault(); // Блокируем скролл страницы
+          start = getTouchPos(e);
+        },
+        { passive: false }
+      );
+
+      canvas.addEventListener(
+        "touchend",
+        (e) => {
+          if (!gameActive || !start) return;
+          e.preventDefault(); // Блокируем зум/скролл
+
+          const endPos = getTouchPos(e);
+          const dx = start.x - endPos.x;
+          const dy = start.y - endPos.y;
+
+          throwSnowball(start.x, start.y, dx, dy);
+          start = null;
+        },
+        { passive: false }
+      );
+
+      // Общая функция броска (чтобы не дублировать код)
+      function throwSnowball(x, y, dx, dy) {
+        snowballs.push({
+          x: x,
+          y: y,
+          vx: -dx / 10, // Сила броска (можно настроить делитель)
+          vy: -dy / 10,
+          r: 15,
+        });
+      }
+
       function createFragments(x, y) {
         const frags = [];
         for (let i = 0; i < 5; i++) {
@@ -192,9 +248,8 @@
       }
 
       function update() {
-        if (!gameActive) return; // Добавлена проверка
+        if (!gameActive) return;
 
-        // Снежки
         for (const s of snowballs) {
           s.x += s.vx * (slowMode ? 0.5 : 1);
           s.y += s.vy * (slowMode ? 0.5 : 1);
@@ -202,7 +257,6 @@
         }
         snowballs = snowballs.filter((s) => s.y < canvas.height);
 
-        // Осколки
         for (const f of fragments) {
           f.x += f.vx;
           f.y += f.vy;
@@ -210,7 +264,6 @@
         }
         fragments = fragments.filter((f) => f.y < canvas.height);
 
-        // Цели
         for (const t of targets) {
           if (!t.hit) {
             t.x += t.dx * (slowMode ? 0.5 : 1);
@@ -221,7 +274,6 @@
           }
         }
 
-        // Столкновения снежков с целями
         for (let i = snowballs.length - 1; i >= 0; i--) {
           const s = snowballs[i];
           for (const t of targets) {
@@ -230,7 +282,6 @@
               t.vy = 0;
               score += 10;
 
-              // создаём осколки и удаляем снежок
               fragments.push(...createFragments(s.x, s.y));
               snowballs.splice(i, 1);
               break;
@@ -238,7 +289,6 @@
           }
         }
 
-        // Конец игры
         if (targets.every((t) => t.hit && t.y - t.r > canvas.height)) endGame();
 
         updateUI();
@@ -247,9 +297,7 @@
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Рисуем цели только если не в меню и не конец игры (по умолчанию цели на экране - это признак игры)
         if (gameActive || !gameOver) {
-          // Цели
           for (const t of targets) {
             if (t.hit && t.y - t.r > canvas.height) continue;
             if (targetImg.complete) {
@@ -264,7 +312,6 @@
               ctx.strokeRect(t.x - t.r, t.y - t.r, t.r * 2, t.r * 2);
           }
 
-          // Снежки
           for (const s of snowballs) {
             if (snowballImg.complete) {
               ctx.drawImage(
@@ -283,7 +330,6 @@
           }
         }
 
-        // Осколки
         ctx.fillStyle = "#fff";
         for (const f of fragments) {
           ctx.beginPath();
@@ -299,9 +345,8 @@
       }
       loop();
 
-      // Кнопки и клавиши
       document.getElementById("restartBtn").onclick = startGame;
-      document.getElementById("startGameBtn").onclick = startGame; // Обработчик для кнопки "Начать игру"
+      document.getElementById("startGameBtn").onclick = startGame;
 
       window.addEventListener("keydown", (e) => {
         if (e.key === "r" || e.key === "R") {
@@ -311,7 +356,7 @@
         if (e.key === "s" || e.key === "S") slowMode = !slowMode;
       });
 
-      showMenu(); // Начинаем с показа меню
+      showMenu();
     </script>
 
     <canvas id="snow"></canvas>
